@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"math/bits"
+	"unsafe"
 )
 
 // storageType is an enum whose values match the type values in the hll storage
@@ -37,6 +38,9 @@ type Hll struct {
 	settings *settings
 	storage  storage
 }
+
+// emptyHllSizeInBytes is used for calculating the size of the empty Hll in bytes
+var emptyHllSizeInBytes = int(unsafe.Sizeof(Hll{}))
 
 // NewHll creates a new Hll with the provided settings.  It will return an error
 // if the settings are invalid.  Since an application usually deals with
@@ -393,6 +397,14 @@ func (h *Hll) ToBytes() []byte {
 	}
 
 	return bytes
+}
+
+// SizeInBytes returns the number of bytes needed to serialize this Hll
+func (h *Hll) SizeInBytes() int {
+	if h.storage == nil {
+		return emptyHllSizeInBytes
+	}
+	return h.storage.sizeInBytes(h.settings)
 }
 
 // Clear resets this Hll.  Unlike other implementations that leave the backing
