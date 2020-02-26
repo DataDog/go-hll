@@ -1,4 +1,4 @@
-module github.com/datadog/go-hll
+module github.com/DataDog/go-hll
 
 go 1.12
 
